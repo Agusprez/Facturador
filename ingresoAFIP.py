@@ -5,6 +5,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import Select
 import time
 
 
@@ -61,17 +62,38 @@ def ingresoAFIP(CUIT, clave, nombreRCEL):
         actions = ActionChains(driver)
         actions.move_to_element(comprobanteEnLinea_button).perform()
         comprobanteEnLinea_button.click()
-
         driver.implicitly_wait(5)
         time.sleep(5)
-        empresa_button = driver.find_elements(By.TAG_NAME, "input")
-        empresa_button = empresa_button[2]
 
-        print(empresa_button.get_attribute("id"))
-        print(empresa_button.get_attribute("type"))
-        
+        # Obtener los identificadores de todas las ventanas abiertas
+        handles = driver.window_handles
+
+        # Cambiar el enfoque a la nueva ventana
+        for handle in handles:
+            if handle != driver.current_window_handle:
+                driver.switch_to.window(handle)
+                break
+
+        empresa_button = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH,"//html/body/div[2]/form/table/tbody/tr[4]/td/input[2]")))
         empresa_button.click()
-        driver.implicitly_wait(5)
+
+        #Desde aca se deberia iterar
+
+        generarComprobantes_button = driver.find_element(By.XPATH, "/html/body/div[2]/table/tbody/tr[1]/td/a")
+        generarComprobantes_button.click()
+
+        elegirPtoVenta = driver.find_element(By.ID, "puntodeventa")
+        selectPV = Select(elegirPtoVenta)
+        selectPV.select_by_index(1) 
+        time.sleep(3)
+
+        elegirComprobante = driver.find_element(By.ID,"universocomprobante")
+        selectComp = Select(elegirComprobante)
+        selectComp.select_by_index(4)
+        time.sleep(3)
+
+        continuar_button = driver.find_element(By.XPATH, "/html/body/div[2]/form/input[2]")
+        continuar_button.click()
 
     
         time.sleep(5)

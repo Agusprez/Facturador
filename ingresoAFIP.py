@@ -7,12 +7,12 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select
 import time
-import random
 
 
 
 
-def ingresoAFIP(CUIT, clave, nombreRCEL):
+def ingresoAFIP(CUIT, clave, comprobantes, actualizar_progreso):
+
     # Configurar las opciones de Chrome para que se ejecute en modo headless
     chrome_options = webdriver.ChromeOptions()
     # chrome_options.add_argument('--headless')  # Ejecutar en modo headless
@@ -79,80 +79,83 @@ def ingresoAFIP(CUIT, clave, nombreRCEL):
         empresa_button.click()
 
         #Desde aca se deberia iterar
+        cantidadComprobantes = len(comprobantes)
+        for index, comprobante in comprobantes.iterrows():
+            generarComprobantes_button = driver.find_element(By.XPATH, "/html/body/div[2]/table/tbody/tr[1]/td/a")
+            generarComprobantes_button.click()
+
+            elegirPtoVenta = driver.find_element(By.ID, "puntodeventa")
+            selectPV = Select(elegirPtoVenta)
+            selectPV.select_by_index(1) 
+            time.sleep(3)
+
+            elegirComprobante = driver.find_element(By.ID,"universocomprobante")
+            selectComp = Select(elegirComprobante)
+            selectComp.select_by_index(4)
+            #Aca en realidad, se deberia elegir By Value
+            time.sleep(3)
+
+            continuar_button = driver.find_element(By.XPATH, "/html/body/div[2]/form/input[2]")
+            continuar_button.click()
+
+            
+            input_fecha = driver.find_element(By.XPATH,"/html/body/div[2]/form/div/div/table/tbody/tr[1]/td/input[1]")
+            
+            input_fecha.clear()
+            #Va a venir en el excel
+            fecha_comprobante = comprobante["Fecha"]
+            ################################
+            input_fecha.send_keys(fecha_comprobante)
+
+            elegirConcepto = driver.find_element(By.ID, "idconcepto")
+            selectConcepto = Select(elegirConcepto)
+            selectConcepto.select_by_index(3)
+            time.sleep(2)
+
+            continuar_button_2  = driver.find_element(By.XPATH, "/html/body/div[2]/form/input[2]")
+            continuar_button_2.click()
+
+            elegirCondicion = driver.find_element(By.ID, "idivareceptor")
+            selectCondicion = Select(elegirCondicion)
+            selectCondicion.select_by_index(2)
+
+            checkbox_condicion = driver.find_element(By.ID, "formadepago4")
+            checkbox_condicion.click()
+            time.sleep(2)
+
+            continuar_button_3  = driver.find_element(By.XPATH, "/html/body/div[2]/form/input[2]")
+            continuar_button_3.click()
+
+            input_detalle = driver.find_element(By.ID, "detalle_descripcion1")
+            input_detalle.send_keys("Varios")
+            #Va a venir en el excel
+            #precio_aleatorio = random.randint(1500,1900)
+            #precio = round(precio_aleatorio * 100,-2 )
+            precio = comprobante["Importe"]
+            ######################
+            input_precio = driver.find_element(By.ID, "detalle_precio1")
+            input_precio.send_keys(precio)
+            elegirAlicuota = driver.find_element(By.ID, "detalle_tipo_iva1")
+            selectAlicuota = Select(elegirAlicuota)
+            selectAlicuota.select_by_index(7)
+            time.sleep(3)
+
+            continuar_button_4  = driver.find_element(By.XPATH, "/html/body/div[2]/form/input[8]")
+            continuar_button_4.click()
 
 
-        generarComprobantes_button = driver.find_element(By.XPATH, "/html/body/div[2]/table/tbody/tr[1]/td/a")
-        generarComprobantes_button.click()
+            generarComprobante_button_final = driver.find_element(By.ID, "btngenerar")
+            generarComprobante_button_final.click()
+            alertaDeComprobante = WebDriverWait(driver, 10).until(EC.alert_is_present())
+            alertaDeComprobante.accept()
+            time.sleep(1)
+            menuPrincipal_button = driver.find_element(By.XPATH, "/html/body/div[2]/table/tbody/tr[2]/td/input")
+            menuPrincipal_button.click()
+            porcentajeProgreso = (index + 1) * 100 /cantidadComprobantes
+            actualizar_progreso(porcentajeProgreso)
+            time.sleep(5)
 
-        elegirPtoVenta = driver.find_element(By.ID, "puntodeventa")
-        selectPV = Select(elegirPtoVenta)
-        selectPV.select_by_index(1) 
-        time.sleep(3)
-
-        elegirComprobante = driver.find_element(By.ID,"universocomprobante")
-        selectComp = Select(elegirComprobante)
-        selectComp.select_by_index(4)
-        time.sleep(3)
-
-        continuar_button = driver.find_element(By.XPATH, "/html/body/div[2]/form/input[2]")
-        continuar_button.click()
-
-        
-        input_fecha = driver.find_element(By.XPATH,"/html/body/div[2]/form/div/div/table/tbody/tr[1]/td/input[1]")
-        
-        input_fecha.clear()
-        #Va a venir en el excel
-        fecha_comprobante = "25/03/2024"
-        ################################
-        input_fecha.send_keys(fecha_comprobante)
-
-        elegirConcepto = driver.find_element(By.ID, "idconcepto")
-        selectConcepto = Select(elegirConcepto)
-        selectConcepto.select_by_index(3)
-        time.sleep(2)
-
-        continuar_button_2  = driver.find_element(By.XPATH, "/html/body/div[2]/form/input[2]")
-        continuar_button_2.click()
-
-        elegirCondicion = driver.find_element(By.ID, "idivareceptor")
-        selectCondicion = Select(elegirCondicion)
-        selectCondicion.select_by_index(2)
-
-        checkbox_condicion = driver.find_element(By.ID, "formadepago4")
-        checkbox_condicion.click()
-        time.sleep(2)
-
-        continuar_button_3  = driver.find_element(By.XPATH, "/html/body/div[2]/form/input[2]")
-        continuar_button_3.click()
-
-        input_detalle = driver.find_element(By.ID, "detalle_descripcion1")
-        input_detalle.send_keys("Varios")
-        #Va a venir en el excel
-        precio_aleatorio = random.randint(1500,1900)
-        precio = round(precio_aleatorio * 100,-2 )
-        ######################
-        input_precio = driver.find_element(By.ID, "detalle_precio1")
-        input_precio.send_keys(precio)
-        elegirAlicuota = driver.find_element(By.ID, "detalle_tipo_iva1")
-        selectAlicuota = Select(elegirAlicuota)
-        selectAlicuota.select_by_index(7)
-        time.sleep(3)
-
-        continuar_button_4  = driver.find_element(By.XPATH, "/html/body/div[2]/form/input[8]")
-        continuar_button_4.click()
-
-
-        generarComprobante_button_final = driver.find_element(By.ID, "btngenerar")
-        generarComprobante_button_final.click()
-        alertaDeComprobante = WebDriverWait(driver, 10).until(EC.alert_is_present())
-        alertaDeComprobante.accept()
-        time.sleep(1)
-        menuPrincipal_button = driver.find_element(By.XPATH, "/html/body/div[2]/table/tbody/tr[2]/td/input")
-        menuPrincipal_button.click()
-
-        time.sleep(5)
-
-        #termina la iteracion
+        #termina la iteracion   
 
     except Exception as e:
         print(e)

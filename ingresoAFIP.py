@@ -159,4 +159,4 @@ def ingresoAFIP(CUIT, clave, nombreRCEL):
     finally:
         driver.quit()
 
-#ingresoAFIP(20293208477,"Lobianco#2023#")
+#ingresoAFIP(20293208477,"Lobianco#2023#", "123")

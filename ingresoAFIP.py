@@ -7,6 +7,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select
 import time
+import numpy as np
+
 
 
 
@@ -15,8 +17,8 @@ def ingresoAFIP(CUIT, clave, comprobantes, actualizar_progreso, modificar_etique
 
     # Configurar las opciones de Chrome para que se ejecute en modo headless
     chrome_options = webdriver.ChromeOptions()
-    chrome_options.add_argument('--headless')  # Ejecutar en modo headless
-    chrome_options.add_argument('--disable-gpu')  # Deshabilitar la GPU (recomendado para ejecución en servidor)
+    #chrome_options.add_argument('--headless')  # Ejecutar en modo headless
+    #chrome_options.add_argument('--disable-gpu')  # Deshabilitar la GPU (recomendado para ejecución en servidor)
     chrome_options.add_argument("--enable-logging")  # Habilitar el registro de la consola
 
     # Inicializar el navegador con las opciones configuradas
@@ -117,7 +119,6 @@ def ingresoAFIP(CUIT, clave, comprobantes, actualizar_progreso, modificar_etique
                 elegirConcepto = driver.find_element(By.ID, "idconcepto")
                 selectConcepto = Select(elegirConcepto)
                 selectConcepto.select_by_index(3)
-                #selectConcepto.select_by_visible_text(" Consumidor Final")
                 time.sleep(2)
 
                 continuar_button_2  = driver.find_element(By.XPATH, "/html/body/div[2]/form/input[2]")
@@ -128,8 +129,15 @@ def ingresoAFIP(CUIT, clave, comprobantes, actualizar_progreso, modificar_etique
 
                 elegirCondicion = driver.find_element(By.ID, "idivareceptor")
                 selectCondicion = Select(elegirCondicion)
-                #selectCondicion.select_by_index(2)
-                selectCondicion.select_by_visible_text(" Consumidor Final")
+                condicionAnteElIVA = " " + comprobante["Condicion Receptor"]
+                selectCondicion.select_by_visible_text(condicionAnteElIVA)
+
+                input_nroDocReceptor = driver.find_element(By.ID,"nrodocreceptor")
+                nroDocReceptor = comprobante["ID Receptor"]
+                if not np.isnan(nroDocReceptor):
+                    input_nroDocReceptor.send_keys(nroDocReceptor)
+                    input_nroDocReceptor.send_keys(Keys.TAB)
+
 
                 checkbox_condicion = driver.find_element(By.ID, "formadepago4")
                 checkbox_condicion.click()
@@ -152,9 +160,10 @@ def ingresoAFIP(CUIT, clave, comprobantes, actualizar_progreso, modificar_etique
                 input_precio = driver.find_element(By.ID, "detalle_precio1")
                 input_precio.send_keys(precio)
                 if nombreComp == "Factura B":
+                    alicuota = " " + comprobante["Alicuota"]
                     elegirAlicuota = driver.find_element(By.ID, "detalle_tipo_iva1")
                     selectAlicuota = Select(elegirAlicuota)
-                    selectAlicuota.select_by_index(7)
+                    selectAlicuota.select_by_visible_text(alicuota)
                 time.sleep(3)
 
                 continuar_button_4  = driver.find_element(By.XPATH, "/html/body/div[2]/form/input[8]")
@@ -164,7 +173,7 @@ def ingresoAFIP(CUIT, clave, comprobantes, actualizar_progreso, modificar_etique
 
 
                 generarComprobante_button_final = driver.find_element(By.ID, "btngenerar")
-                #generarComprobante_button_final.click()
+                generarComprobante_button_final.click()
                 alertaDeComprobante = WebDriverWait(driver, 10).until(EC.alert_is_present())
                 alertaDeComprobante.accept()
                 time.sleep(1)

@@ -3,11 +3,12 @@ import datosExcel
 from ingresoAFIP import ingresoAFIP
 from selenium import webdriver
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
 from datosExcel import abrir_excel
 import time
 
 def proceso():
+    tiempo_inicio = time.time()
 
     datos = abrir_excel()
     cuit = datos["CUIT"]
@@ -19,11 +20,22 @@ def proceso():
 
 
     modificar_etiqueta(info, razonSocial)
-    #ingresoAFIP(cuit, clave, comprobantes, actualizar_progreso, modificar_etiqueta)
+    ingresoAFIP(cuit, clave, comprobantes, actualizar_progreso, modificar_etiqueta)
     modificar_etiqueta(info_progreso,"Proceso completado")
-    time.sleep(13)
+    time.sleep(2)
+    mostrar_resumen()
     ventanaPrincipal.quit()
 
+def mostrar_resumen():
+    tiempo_fin = time.time()
+    tiempo_transcurrido = tiempo_fin - tiempo_inicio
+    tiempo_transcurrido_formateado = time.strftime("%H:%M:%S", time.gmtime(tiempo_transcurrido))
+
+    mensaje = f"\nTiempo empleado: {tiempo_transcurrido_formateado}\n"
+
+
+    messagebox.showinfo("Resumen del Proceso", mensaje)
+    tiempo_inicio = 0
 
 def actualizar_progreso(porcentaje):
     progressbar["value"] = porcentaje

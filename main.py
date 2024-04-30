@@ -1,3 +1,5 @@
+import ingresoAFIP
+import datosExcel
 from ingresoAFIP import ingresoAFIP
 from selenium import webdriver
 import tkinter as tk
@@ -5,21 +7,21 @@ from tkinter import ttk
 from datosExcel import abrir_excel
 import time
 
-def simular_proceso():
-    # Simula un proceso que toma tiempo
+def proceso():
+
     datos = abrir_excel()
     cuit = datos["CUIT"]
     cuit = str(cuit)
     clave = datos["CLAVE"] 
     comprobantes = datos["Comprobantes"]
+    print(comprobantes)
     razonSocial = datos["RAZON_SOCIAL"]
-    #total_comprobantes = len(comprobantes)  # Obtener la cantidad total de comprobantes
-    #print(comprobantes)
-    #print(datos["Comprobantes"])
+
+
     modificar_etiqueta(info, razonSocial)
-    ingresoAFIP(cuit, clave, comprobantes, actualizar_progreso, modificar_etiqueta)
+    #ingresoAFIP(cuit, clave, comprobantes, actualizar_progreso, modificar_etiqueta)
     modificar_etiqueta(info_progreso,"Proceso completado")
-    time.sleep(3)
+    time.sleep(13)
     ventanaPrincipal.quit()
 
 
@@ -54,7 +56,7 @@ label_progreso = tk.Label(ventanaPrincipal, text="0%", font=("Arial", 12))
 label_progreso.pack()
 
 # Botón para simular un proceso
-boton_simular = tk.Button(ventanaPrincipal, text="Procesar Excel", command=simular_proceso)
+boton_simular = tk.Button(ventanaPrincipal, text="Procesar Excel", command=proceso)
 boton_simular.pack(pady=14)
 
 boton_salir = tk.Button(ventanaPrincipal,text="Salir", command=quit)

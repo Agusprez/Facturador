@@ -16,6 +16,7 @@ def abrir_excel():
 
         df_comprobantes = pd.read_excel(archivo_excel, sheet_name="Comprobantes")
         df_comprobantes["Fecha"] = df_comprobantes["Fecha"].dt.strftime("%d/%m/%Y")
+        df_comprobantes["Alicuota"] = df_comprobantes["Alicuota"].astype(str)
         datos = {
             "CUIT":CUIT,
             "CLAVE":CLAVE,

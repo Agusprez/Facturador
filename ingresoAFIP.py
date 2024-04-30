@@ -15,8 +15,8 @@ def ingresoAFIP(CUIT, clave, comprobantes, actualizar_progreso, modificar_etique
 
     # Configurar las opciones de Chrome para que se ejecute en modo headless
     chrome_options = webdriver.ChromeOptions()
-    #chrome_options.add_argument('--headless')  # Ejecutar en modo headless
-    #chrome_options.add_argument('--disable-gpu')  # Deshabilitar la GPU (recomendado para ejecución en servidor)
+    chrome_options.add_argument('--headless')  # Ejecutar en modo headless
+    chrome_options.add_argument('--disable-gpu')  # Deshabilitar la GPU (recomendado para ejecución en servidor)
     chrome_options.add_argument("--enable-logging")  # Habilitar el registro de la consola
 
     # Inicializar el navegador con las opciones configuradas
@@ -164,7 +164,7 @@ def ingresoAFIP(CUIT, clave, comprobantes, actualizar_progreso, modificar_etique
 
 
                 generarComprobante_button_final = driver.find_element(By.ID, "btngenerar")
-                generarComprobante_button_final.click()
+                #generarComprobante_button_final.click()
                 alertaDeComprobante = WebDriverWait(driver, 10).until(EC.alert_is_present())
                 alertaDeComprobante.accept()
                 time.sleep(1)
